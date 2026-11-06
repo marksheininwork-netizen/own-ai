@@ -1,32 +1,62 @@
-# Own AI: local mode
+# Own AI Local — macOS, Windows and Linux
 
-This is a local web application. It does not use a paid API. It uses an existing downloaded instruction model through llama.cpp, **not** your untrained TinyGPT weights.
+This is a local web application, not a public cloud deployment. It uses **llama.cpp** with a downloaded instruction model for actual text generation. The self-coded TinyGPT is a separate experimental project.
 
-On a Mac, install llama.cpp using Homebrew:
+## 1. Install prerequisites
+
+Install Python 3.10+ and Git. Install **llama.cpp** and make sure the `llama-server` executable is on your PATH.
+
+- **macOS (Apple Silicon or Intel):** install Homebrew, then `brew install llama.cpp`.
+- **Windows:** download a llama.cpp release appropriate for your CPU/GPU from https://github.com/ggml-org/llama.cpp/releases and add its folder to PATH. Install Python from python.org and Git for Windows. If GPU support fails, use a CPU build.
+- **Linux:** install a llama.cpp build for your hardware from its official instructions at https://github.com/ggml-org/llama.cpp and add `llama-server` to PATH.
+
+On an **M4 MacBook Air**, llama.cpp should use Apple Metal when installed with compatible support. NVIDIA PCs can use CUDA-enabled builds. Other devices can use CPU inference, which is slower. The launch script doesn't force a GPU backend.
+
+## 2. Download and install the app
+
+In macOS/Linux Terminal:
 
 ```sh
-brew install llama.cpp
 git clone https://github.com/marksheininwork-netizen/own-ai.git
 cd own-ai
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r local_requirements.txt
+python -m pip install -r local_requirements.txt
+python start_local.py
 ```
 
-In terminal window 1, start a local model (first run downloads model weights; check llama.cpp compatibility with the selected GGUF model):
+In Windows PowerShell:
+
+```powershell
+git clone https://github.com/marksheininwork-netizen/own-ai.git
+cd own-ai
+py -m venv .venv
+.venv\Scripts\python.exe -m pip install -r local_requirements.txt
+.venv\Scripts\python.exe start_local.py
+```
+
+The launcher starts llama.cpp and the local web server, then opens **http://127.0.0.1:7860**. First model download may take several minutes. Keep the terminal window running while using the app.
+
+If llama-server isn't on PATH, set `OWN_AI_LLAMA_SERVER` to the full executable path. To select a different compatible Hugging Face GGUF model, pass `--model OWNER/REPO:QUANTIZATION` or set `OWN_AI_MODEL`. For a pre-running model server, use `python start_local.py --no-model`.
+
+## 3. Optional local image generation
+
+Image generation uses Stable Diffusion Turbo through Diffusers. Install:
 
 ```sh
-llama-server -hf ggml-org/gemma-3-1b-it-GGUF:Q4_K_M --port 9931
+python -m pip install -r requirements-images.txt
 ```
 
-In terminal window 2, from the repo with the venv activated:
+The image pipeline downloads additional model files. CUDA GPUs and Apple Silicon MPS may work depending on memory and package versions. **CPU-only image generation is not supported by the current endpoint.** 8 GB machines may run out of memory; 16–24 GB or more is preferable. The image model may have separate license and usage conditions.
 
-```sh
-python local_server.py
-```
+## 4. Tests and troubleshooting
 
-Open **http://127.0.0.1:7860** in a browser on the same Mac.
+Run `python -m unittest test_local.py` after installing the base requirements. These tests exercise HTTP routes, PDF/DOCX export and validation; they do **not** verify model inference or image quality.
 
-This provides actual local chat inference, plus PDF and DOCX document creation. The self-coded TinyGPT remains experimental. Image generation is implemented as an optional Stable Diffusion Turbo endpoint. Install additional packages with `pip install torch diffusers transformers accelerate safetensors` before starting the Flask server. It requires a supported GPU and downloads large model files. This path is **not tested** on your Mac, and some Apple Silicon configurations may encounter memory or compatibility issues. Running on a phone or publicly accessible website requires a separately secured deployment; do not expose the local server to the internet without authentication and access controls.
+If startup fails, run `llama-server --help` to check installation. If model download fails, choose a supported GGUF model and check the llama.cpp version. If the model server takes more than two minutes to load, start it separately and then run `python start_local.py --no-model`.
 
-If the model download fails, choose a supported GGUF repository from the llama.cpp documentation and replace the `-hf` argument. No automatic model testing has been performed.
+This app binds only to 127.0.0.1 and has no authentication. **Do not expose it directly to the internet.** Phone access and account synchronization are not included.
+
+### Current status
+
+Code is committed, but real end-to-end execution on an M4 Mac, Windows PC and Linux PC has not been verified. Chat quality depends on the downloaded model. PDF and Word export generate real files; image generation is optional and hardware-dependent.
