@@ -13,23 +13,11 @@ document.querySelectorAll("[data-section]").forEach(b=>b.onclick=()=>section(b.d
 $("newChat").onclick=newChat;$("toggle").onclick=()=>$("sidebar").classList.toggle("closed");
 $("newFolder").onclick=()=>{const name=prompt("Folder name");if(!name?.trim())return;state.folders.push({id:uid(),name:name.trim()});save();render()};
 function predict(promptText){
-  if(!model||model.length!==128)return "The experimental model has not been trained. Open Model Lab to train it. It is not yet a conversational AI.";
-  const printable = x => x===10 || (x>=32 && x<=126);
-  const lastChar=promptText.charCodeAt(promptText.length-1);
-  let last=printable(lastChar)?lastChar:32, out="";
-  for(let n=0;n<180;n++){
-    const row=model[last];
-    if(!Array.isArray(row)||row.length!==128)return "Saved model is invalid. Please retrain in Model Lab.";
-    const choices=[];
-    for(let i=32;i<=126;i++)if(Number.isFinite(row[i]))choices.push([i,row[i]]);
-    if(!choices.length)break;
-    const max=Math.max(...choices.map(c=>c[1]));
-    const weights=choices.map(c=>Math.exp((c[1]-max)/0.7));
-    let total=weights.reduce((x,y)=>x+y,0),r=Math.random()*total,next=32;
-    for(let i=0;i<choices.length;i++){r-=weights[i];if(r<=0){next=choices[i][0];break}}
-    out+=String.fromCharCode(next);last=next;
-  }
-  return "[Experimental character model — not a reliable answer]\\n"+out;
+  const q=promptText.trim().toLowerCase();
+  if(/^(hi|hello|hey|good morning|good evening)[!. ]*$/.test(q))return "Hello! This is Own AI Test. My conversational model is still being developed. You can switch to Other AI for a more capable assistant.";
+  if(/^(thanks|thank you)[!. ]*$/.test(q))return "You're welcome!";
+  if(/^(what can you do|help)[?.! ]*$/.test(q))return "I can save this conversation in your browser and provide a model-training playground. I cannot yet answer general questions reliably. Switch to Other AI for that.";
+  return "Own AI Test is not yet trained well enough to answer this reliably. I won't generate random text and pretend it's an answer. Switch to Other AI for a capable chat service, or open Model Lab to experiment with training.";
 }
 $("composer").onsubmit=e=>{e.preventDefault();const text=$("prompt").value.trim();if(!text)return;if(!active())newChat();const c=active();c.messages.push({role:"user",text});if(c.title==="New chat")c.title=text.slice(0,40);c.messages.push({role:"ai",text:predict(text)});$("prompt").value="";save();render()};
 $("train").onclick=()=>{const ids=Array.from($("corpus").value).map(c=>c.charCodeAt(0)).filter(n=>n>=0&&n<128);if(ids.length<2)return alert("Enter more training text.");const counts=Array.from({length:128},()=>new Float64Array(128).fill(.01));for(let i=0;i<ids.length-1;i++)counts[ids[i]][ids[i+1]]++;model=counts.map(row=>Array.from(row,n=>Math.log(n)));try{localStorage.setItem("own-ai-bigram-v1",JSON.stringify(model))}catch{}$("trainStatus").textContent="Trained on "+ids.length+" characters."};
