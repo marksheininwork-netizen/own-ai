@@ -27,6 +27,6 @@ python local_server.py
 
 Open **http://127.0.0.1:7860** in a browser on the same Mac.
 
-This provides actual local chat inference, plus PDF and DOCX document creation. The self-coded TinyGPT remains experimental. **Image generation is not yet implemented.** Running on a phone or publicly accessible website requires a separately secured deployment; do not expose the local server to the internet without authentication and access controls.
+This provides actual local chat inference, plus PDF and DOCX document creation. The self-coded TinyGPT remains experimental. Image generation is implemented as an optional Stable Diffusion Turbo endpoint. Install additional packages with `pip install torch diffusers transformers accelerate safetensors` before starting the Flask server. It requires a supported GPU and downloads large model files. This path is **not tested** on your Mac, and some Apple Silicon configurations may encounter memory or compatibility issues. Running on a phone or publicly accessible website requires a separately secured deployment; do not expose the local server to the internet without authentication and access controls.
 
 If the model download fails, choose a supported GGUF repository from the llama.cpp documentation and replace the `-hf` argument. No automatic model testing has been performed.
