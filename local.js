@@ -1,0 +1,9 @@
+"use strict";const $=id=>document.getElementById(id);let messages=[],lastAnswer="";
+async function health(){try{const r=await fetch("/api/health");const j=await r.json();$("health").textContent=j.ready?"Local model connected: "+(j.models[0]?.id||"ready"):"Not connected: "+j.error}catch(e){$("health").textContent="Local server unavailable."}}
+$("localMode").onclick=()=>{$("localPanel").hidden=false;$("testPanel").hidden=true};
+$("testMode").onclick=()=>{$("localPanel").hidden=true;$("testPanel").hidden=false};
+$("clear").onclick=()=>{messages=[];$("conversation").textContent="";lastAnswer=""};
+$("send").onclick=async()=>{const q=$("question").value.trim();if(!q)return;$("send").disabled=true;$("conversation").textContent+="You: "+q+"\n\n";messages.push({role:"user",content:q});$("question").value="";try{const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages})});const j=await r.json();if(!r.ok)throw Error(j.error||"Request failed");lastAnswer=j.answer;messages.push({role:"assistant",content:j.answer});$("conversation").textContent+="AI: "+j.answer+"\n\n"}catch(e){messages.pop();$("conversation").textContent+="Error: "+e.message+"\n\n"}finally{$("send").disabled=false}};
+$("useAnswer").onclick=()=>{$("body").value=lastAnswer||$("body").value};
+async function download(format){const r=await fetch("/api/document",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({format,title:$("title").value,body:$("body").value})});if(!r.ok)return alert("Export failed");const url=URL.createObjectURL(await r.blob());const a=document.createElement("a");a.href=url;a.download="own-ai-document."+format;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+$("pdf").onclick=()=>download("pdf");$("docx").onclick=()=>download("docx");health();
