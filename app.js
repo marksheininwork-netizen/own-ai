@@ -12,7 +12,25 @@ function section(name){document.querySelectorAll(".page").forEach(el=>el.classLi
 document.querySelectorAll("[data-section]").forEach(b=>b.onclick=()=>section(b.dataset.section));
 $("newChat").onclick=newChat;$("toggle").onclick=()=>$("sidebar").classList.toggle("closed");
 $("newFolder").onclick=()=>{const name=prompt("Folder name");if(!name?.trim())return;state.folders.push({id:uid(),name:name.trim()});save();render()};
-function predict(promptText){if(!model||model.length!==128)return "No trained browser model yet. Open the Model Lab to train the experimental character model. The Python Transformer is not running on GitHub Pages.";const softmax=row=>{const max=Math.max(...row),ex=row.map(x=>Math.exp(x-max)),sum=ex.reduce((a,b)=>a+b,0);return ex.map(x=>x/sum)};let last=promptText.charCodeAt(promptText.length-1);if(!(last>=0&&last<128))last=32;let out="";for(let n=0;n<180;n++){let r=Math.random(),probs=softmax(model[last]);let next=32;for(let i=0;i<128;i++){r-=probs[i];if(r<=0){next=i;break}}out+=String.fromCharCode(next);last=next}return out}
+function predict(promptText){
+  if(!model||model.length!==128)return "The experimental model has not been trained. Open Model Lab to train it. It is not yet a conversational AI.";
+  const printable = x => x===10 || (x>=32 && x<=126);
+  const lastChar=promptText.charCodeAt(promptText.length-1);
+  let last=printable(lastChar)?lastChar:32, out="";
+  for(let n=0;n<180;n++){
+    const row=model[last];
+    if(!Array.isArray(row)||row.length!==128)return "Saved model is invalid. Please retrain in Model Lab.";
+    const choices=[];
+    for(let i=32;i<=126;i++)if(Number.isFinite(row[i]))choices.push([i,row[i]]);
+    if(!choices.length)break;
+    const max=Math.max(...choices.map(c=>c[1]));
+    const weights=choices.map(c=>Math.exp((c[1]-max)/0.7));
+    let total=weights.reduce((x,y)=>x+y,0),r=Math.random()*total,next=32;
+    for(let i=0;i<choices.length;i++){r-=weights[i];if(r<=0){next=choices[i][0];break}}
+    out+=String.fromCharCode(next);last=next;
+  }
+  return "[Experimental character model — not a reliable answer]\\n"+out;
+}
 $("composer").onsubmit=e=>{e.preventDefault();const text=$("prompt").value.trim();if(!text)return;if(!active())newChat();const c=active();c.messages.push({role:"user",text});if(c.title==="New chat")c.title=text.slice(0,40);c.messages.push({role:"ai",text:predict(text)});$("prompt").value="";save();render()};
 $("train").onclick=()=>{const ids=Array.from($("corpus").value).map(c=>c.charCodeAt(0)).filter(n=>n>=0&&n<128);if(ids.length<2)return alert("Enter more training text.");const counts=Array.from({length:128},()=>new Float64Array(128).fill(.01));for(let i=0;i<ids.length-1;i++)counts[ids[i]][ids[i+1]]++;model=counts.map(row=>Array.from(row,n=>Math.log(n)));try{localStorage.setItem("own-ai-bigram-v1",JSON.stringify(model))}catch{}$("trainStatus").textContent="Trained on "+ids.length+" characters."};
 function renderDocs(){const d=$("docList");d.replaceChildren();state.docs.forEach(doc=>{const b=document.createElement("button");b.textContent="▤ "+doc.title;b.onclick=()=>openDoc(doc.id);d.append(b)})}
