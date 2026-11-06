@@ -7,7 +7,7 @@ https://marksheininwork-netizen.github.io/own-ai/
 
 ## Implemented
 - Upload PNG, JPEG, WebP, SVG (up to 25 MB and 25 megapixels) and preview in canvas.
-- Adjust brightness, contrast, saturation, grayscale; rotate, mirror, overlay centered text.
+- Paste an image from the clipboard (Cmd/Ctrl+V), or upload an image.\n- Drag to select existing text, cover it with a sampled flat background color, and add replacement text. Undo the last replacement.\n- Adjust brightness, contrast, saturation, grayscale; rotate, mirror, overlay centered text.
 - Download rendered PNG or JPEG.
 - Upload and edit TXT, MD, JSON, CSV, HTML, CSS, JS, TS, PY, XML, YAML and LOG.
 - Download edited text, export HTML, or use browser print to save a PDF.
@@ -17,7 +17,7 @@ https://marksheininwork-netizen.github.io/own-ai/
 ## Not implemented
 - **Generative AI editing** (arbitrary natural-language image or document changes).
 - DOCX, XLSX, PPTX, and PDF import/edit/export.
-- AI image generation, object removal, OCR, background removal.
+- AI image generation, object removal, OCR, background removal, and automatic text recognition/font matching.\n- Text replacement over complex backgrounds (current replacement uses a flat sampled fill).
 - Cross-browser automated testing.
 
 This project does **not** claim to be an unlimited hosted generative AI. GitHub Pages serves static files and provides no GPU inference. A future version may offer optional on-device WebGPU models, subject to hardware/browser limits, or an opt-in external provider.
