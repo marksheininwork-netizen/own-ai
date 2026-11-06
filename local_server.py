@@ -78,5 +78,39 @@ def document():
     output.seek(0)
     return send_file(output, mimetype=mimetype, as_attachment=True, download_name="own-ai-document." + ext)
 
+
+@app.post("/api/image")
+def generate_image():
+    """Optional local Stable Diffusion Turbo image generation. Requires extra dependencies and GPU/RAM."""
+    payload = request.get_json(silent=True) or {}
+    prompt = str(payload.get("prompt", "")).strip()[:500]
+    if not prompt:
+        return jsonify(error="Enter an image prompt"), 400
+    try:
+        import torch
+        from diffusers import AutoPipelineForText2Image
+        import threading
+        if not hasattr(generate_image, "_lock"):
+            generate_image._lock = threading.Lock()
+        if not generate_image._lock.acquire(blocking=False):
+            return jsonify(error="Image generation is already running"), 429
+        try:
+            device = "cuda" if torch.cuda.is_available() else ("mps" if hasattr(torch.backends, "mps") and torch.backends.mps.is_available() else "cpu")
+            if device == "cpu":
+                return jsonify(error="Image generation requires a supported GPU for practical use; no CUDA/MPS GPU detected."), 503
+            if not hasattr(generate_image, "_pipe"):
+                generate_image._pipe = AutoPipelineForText2Image.from_pretrained(
+                    "stabilityai/sd-turbo", torch_dtype=torch.float16 if device == "cuda" else torch.float32
+                ).to(device)
+            image = generate_image._pipe(prompt=prompt, num_inference_steps=2, guidance_scale=0.0, height=512, width=512).images[0]
+            output = BytesIO()
+            image.save(output, format="PNG")
+            output.seek(0)
+            return send_file(output, mimetype="image/png", as_attachment=False)
+        finally:
+            generate_image._lock.release()
+    except (ImportError, OSError, RuntimeError, ValueError) as exc:
+        return jsonify(error="Image model unavailable: " + str(exc)[:300]), 503
+
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=7860, debug=False)
