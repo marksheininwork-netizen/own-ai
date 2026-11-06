@@ -36,3 +36,7 @@ Editing is performed in your browser; files are not uploaded to a server by this
 
 ## Safety
 Original files are not overwritten. Downloads receive an `-edited` suffix. This is an early version: keep backups of important documents.
+
+## No-setup browser editing
+
+The main editor now supports prompt-like instructions for deterministic image transforms entirely in-browser (grayscale, sepia, invert, brightness, contrast, saturation, rotation, mirroring, text overlay). It requires no terminal or backend and can run on modern phones and computers. **This is not arbitrary generative AI editing**, and does not intelligently remove existing image text or reconstruct backgrounds. The separate optional GPU backend in `image_server.py` is not used by the default browser workflow.
