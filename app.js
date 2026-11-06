@@ -41,3 +41,7 @@ $("deleteDoc").onclick=()=>{if(!state.doc||!confirm("Delete this document?"))ret
 $("pdfDoc").onclick=()=>{const d=state.docs.find(x=>x.id===state.doc);if(!d)return alert("Create a document first.");$("saveDoc").click();let print=$("printDoc");if(!print){print=document.createElement("div");print.id="printDoc";print.hidden=true;document.body.append(print)}print.textContent=$("docTitle").value+"\n\n"+$("docBody").value;print.hidden=false;window.print();print.hidden=true};
 $("imageUpload").onchange=e=>{for(const file of e.target.files){if(!file.type.startsWith("image/"))continue;const img=document.createElement("img");img.alt=file.name;img.src=URL.createObjectURL(file);$("gallery").append(img)}};
 if(!state.chats.length)newChat();else{render();section("chat")}
+
+// Separate experimental and third-party AI experiences.
+$("testMode").onclick=()=>{ $("ownChat").classList.remove("hidden");$("externalChat").classList.add("hidden");$("testMode").setAttribute("aria-pressed","true");$("otherMode").setAttribute("aria-pressed","false") };
+$("otherMode").onclick=()=>{ $("ownChat").classList.add("hidden");$("externalChat").classList.remove("hidden");$("testMode").setAttribute("aria-pressed","false");$("otherMode").setAttribute("aria-pressed","true") };
