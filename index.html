@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Own AI — Browser Lab</title><link rel="stylesheet" href="style.css"></head>
+<body><main><header><h1>Own AI <span>Browser Lab</span></h1><p>Train a tiny self-coded neural language model directly in your browser. No server, API, or installation.</p></header>
+<section class="panel"><h2>1. Training text</h2><label for="corpus">Edit the text your model learns from</label><textarea id="corpus" rows="8">User: Hello!
+AI: Hello! How are you?
+User: What is mathematics?
+AI: Mathematics is the study of patterns.
+User: What is code?
+AI: Code is a set of instructions.
+User: Hello!
+AI: Hello! How are you?
+User: What is mathematics?
+AI: Mathematics is the study of patterns.</textarea><div class="controls"><button id="train">Train model</button><button id="reset" class="secondary">Reset</button><span id="status" role="status">Not trained</span></div><p class="note">Training is local. The small browser model learns character-to-character probabilities; it is a separate educational model from the Python Transformer in this repository.</p></section>
+<section class="panel"><h2>2. Generate text</h2><label for="prompt">Starting text</label><input id="prompt" value="User: Hello!&#10;AI:" aria-label="Starting text"><div class="controls"><label for="length">Length</label><input id="length" type="number" value="160" min="1" max="500"><button id="generate">Generate</button></div><pre id="output" aria-live="polite">Train the model first.</pre></section>
+<footer><a href="https://github.com/marksheininwork-netizen/own-ai">View source on GitHub</a> · Experimental, not a general-purpose assistant</footer></main><script src="web-model.js"></script></body></html>
