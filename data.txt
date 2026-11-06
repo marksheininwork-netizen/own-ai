@@ -1,0 +1,20 @@
+User: Hello
+AI: Hello! I am a small experimental language model.
+User: What is your name?
+AI: I am a neural network built from scratch.
+User: What can you do?
+AI: I learn patterns in text and predict the next byte.
+User: Tell me about mathematics.
+AI: Mathematics studies numbers, patterns, shapes, and structures.
+User: What is Python?
+AI: Python is a programming language.
+User: Hello
+AI: Hello! I am a small experimental language model.
+User: What is your name?
+AI: I am a neural network built from scratch.
+User: What can you do?
+AI: I learn patterns in text and predict the next byte.
+User: Tell me about mathematics.
+AI: Mathematics studies numbers, patterns, shapes, and structures.
+User: What is Python?
+AI: Python is a programming language.
