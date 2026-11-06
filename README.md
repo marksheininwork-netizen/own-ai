@@ -1,44 +1,38 @@
-# Own AI — self-coded Transformer
+# Own AI Studio
 
-A small GPT-style neural network implemented with PyTorch tensor operations. The Transformer layers and training loop are written in this repository. No Ollama, pretrained model, or paid AI API is used.
+A free, static, browser-based editor: **upload → edit → download**.
 
-**Status:** Experimental source code. This model has not been trained or benchmarked as part of this repository upload. The included tiny dataset is a smoke test, not enough for a useful assistant.
+## Website
+https://marksheininwork-netizen.github.io/own-ai/
 
-## Quick start (macOS / Linux)
+## Implemented
+- Upload PNG, JPEG, WebP, SVG (up to 25 MB and 25 megapixels) and preview in canvas.
+- Adjust brightness, contrast, saturation, grayscale; rotate, mirror, overlay centered text.
+- Download rendered PNG or JPEG.
+- Upload and edit TXT, MD, JSON, CSV, HTML, CSS, JS, TS, PY, XML, YAML and LOG.
+- Download edited text, export HTML, or use browser print to save a PDF.
+- Limited instruction parsing for common image and text transformations.
+- Client-side processing: no account, API key, or paid inference required.
 
-Install Python 3.10+ and Git.
+## Not implemented
+- **Generative AI editing** (arbitrary natural-language image or document changes).
+- DOCX, XLSX, PPTX, and PDF import/edit/export.
+- AI image generation, object removal, OCR, background removal.
+- Cross-browser automated testing.
+
+This project does **not** claim to be an unlimited hosted generative AI. GitHub Pages serves static files and provides no GPU inference. A future version may offer optional on-device WebGPU models, subject to hardware/browser limits, or an opt-in external provider.
+
+## Development
+Open `index.html` in a browser or run a static server:
 
 ```bash
-git clone https://github.com/marksheininwork-netizen/own-ai.git
-cd own-ai
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-python train.py --steps 500
-python chat.py
+python3 -m http.server 8000
 ```
 
-Windows PowerShell activation: `.venv\Scripts\Activate.ps1`.
+Then open http://localhost:8000.
 
-## Files
+## Privacy
+Editing is performed in your browser; files are not uploaded to a server by this application. Avoid opening untrusted SVG files in other tools without inspection.
 
-- `model.py` — decoder-only Transformer with causal multi-head attention
-- `train.py` — training loop, validation-loss reporting, checkpoint saving
-- `chat.py` — interactive terminal text generation
-- `data.txt` — tiny sample corpus
-- `requirements.txt` — PyTorch dependency
-- `.gitignore` — excludes local checkpoints and environments
-
-## How it learns
-
-The model predicts the next UTF-8 byte from previous bytes. Its tokenizer is byte-level with 256 possible values. Parameters start randomly initialized and are trained on the provided corpus.
-
-Replace `data.txt` with a much larger text dataset you have rights to use. Longer training and better data are necessary for coherent responses.
-
-## Hosting
-
-GitHub hosts the source code, not model inference. Run the model on your own computer. A public chat website requires a continuously running backend with enough compute.
-
-## License
-
-No license has been added. All rights reserved by default unless the repository owner later chooses a license.
+## Safety
+Original files are not overwritten. Downloads receive an `-edited` suffix. This is an early version: keep backups of important documents.
